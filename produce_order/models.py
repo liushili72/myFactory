@@ -68,11 +68,6 @@ class Product(models.Model):
 class ProduceOrder(models.Model):
     order_number = models.CharField(u'生产单编号', max_length=255)
     company = models.ForeignKey(Company, verbose_name=u'客户')
-    products = models.ManyToManyField(Product,
-                                      through='OrderProductShip',
-                                      through_fields=('order', 'product'),
-                                      verbose_name=u'产品')
-
     pay_time = models.DateTimeField(u'交货时间')
     create_time = models.DateTimeField(u'创建时间', auto_now_add=True)
 
@@ -81,7 +76,11 @@ class ProduceOrder(models.Model):
         verbose_name = u'生产单'
 
 
-class OrderProductShip(models.Model):
+class OrderItem(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    order = models.ForeignKey(ProduceOrder, on_delete=models.CASCADE)
+    order = models.ForeignKey(ProduceOrder, on_delete=models.CASCADE, related_name='order_item')
     box_number = models.IntegerField(u'纸箱数量')
+
+    class Meta:
+        db_table = 'order_item'
+        verbose_name = u'订单明细'
